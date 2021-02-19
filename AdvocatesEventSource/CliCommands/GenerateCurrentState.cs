@@ -47,15 +47,22 @@ namespace AdvocatesEventSource.Model
                 }
                 if (@event is AdvocateModified)
                 {
+                    var modifiedAdvocate = @event as AdvocateModified;
+
+                    // made to handle file renames
+                    if (existingAdvocate == null)
+                    {
+                        existingAdvocate = advocates.FirstOrDefault(x => x.UID == modifiedAdvocate.NewUID || x.FileName == modifiedAdvocate.NewFileName);
+                    }
                     if (existingAdvocate == null)
                     {
                         existingAdvocate = new Advocate();
                         advocates.Add(existingAdvocate);
                         Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
                     }
-                    var modifiedAdvocate = @event as AdvocateModified;
 
-                    existingAdvocate.FileName = modifiedAdvocate.FileName;
+                    existingAdvocate.UID = modifiedAdvocate.NewUID;
+                    existingAdvocate.FileName = modifiedAdvocate.NewFileName;
                     existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
                     existingAdvocate.Name = modifiedAdvocate.NewName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
@@ -70,6 +77,7 @@ namespace AdvocatesEventSource.Model
             }
 
             Console.WriteLine($"Advocate count: {advocates.Count}");
+            Console.WriteLine("GenerateCurrentState completed.");
 
             await SaveCurrentStateAsync(advocates);
         }

@@ -2,6 +2,7 @@
 
 namespace AdvocatesEventSource.Model
 {
+    [System.Diagnostics.DebuggerDisplay("Advocate: {UID}")]
     public class DashboardAdvocate
     {
         [JsonIgnore]

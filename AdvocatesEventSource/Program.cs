@@ -12,22 +12,26 @@ namespace AdvocatesEventSource
 
         public static async Task Main(string[] args)
         {
-            if (args.Length != 1) { Console.WriteLine("No arguments specified."); return; } ;
+            if (args.Length < 1) { Console.WriteLine("No arguments specified."); return; } ;
 
-            switch (args[0])
+            foreach (var arg in args)
             {
-                case nameof(GenerateAllEvents):
-                    await new GenerateAllEvents(gitPath, connectionString).ExecuteAsync();
-                    break;
-                case nameof(GenerateCurrentState):
-                    await new GenerateCurrentState(connectionString).ExecuteAsync(); 
-                    break;
-                case nameof(GenerateAdvocatesForDashboard):
-                    await new GenerateAdvocatesForDashboard(connectionString).ExecuteAsync();
-                    break;
-                default:
-                    break;
+                switch (arg)
+                {
+                    case nameof(GenerateAllEvents):
+                        await new GenerateAllEvents(gitPath, connectionString).ExecuteAsync();
+                        break;
+                    case nameof(GenerateCurrentState):
+                        await new GenerateCurrentState(connectionString).ExecuteAsync();
+                        break;
+                    case nameof(GenerateAdvocatesForDashboard):
+                        await new GenerateAdvocatesForDashboard(connectionString).ExecuteAsync();
+                        break;
+                    default:
+                        break;
+                }
             }
+            
 
         }
 

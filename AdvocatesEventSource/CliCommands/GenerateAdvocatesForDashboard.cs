@@ -35,40 +35,48 @@ namespace AdvocatesEventSource.CliCommands
                 if (@event is AdvocateAdded)
                 {
                     var addedAdvocate = @event as AdvocateAdded;
-                    advocates.Add(new DashboardAdvocate
+                    DashboardAdvocate advocateToAdd = new DashboardAdvocate
                     {
                         UID = addedAdvocate.UID,
                         FileName = addedAdvocate.FileName,
                         GitHubUserName = addedAdvocate.GitHubUserName,
                         Team = addedAdvocate.Team,
                         Alias = addedAdvocate.Alias,
-                    });
+                    };
+                    if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
+                    {
+                        advocates.Add(advocateToAdd);
+                    }
                 }
                 if (@event is AdvocateModified)
                 {
+                    var modifiedAdvocate = @event as AdvocateModified;
+
+                    // made to handle file renames
+                    if (existingAdvocate == null)
+                    {
+                        existingAdvocate = advocates.FirstOrDefault(x => x.UID == modifiedAdvocate.NewUID || x.FileName == modifiedAdvocate.NewFileName);
+                    }
                     if (existingAdvocate == null)
                     {
                         existingAdvocate = new DashboardAdvocate();
                         advocates.Add(existingAdvocate);
                         Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
                     }
-                    var modifiedAdvocate = @event as AdvocateModified;
-
-                    existingAdvocate.FileName = modifiedAdvocate.FileName;
+                    
+                    existingAdvocate.UID = modifiedAdvocate.NewUID;
+                    existingAdvocate.FileName = modifiedAdvocate.NewFileName;
                     existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                 }
-                //if (@event is AdvocateRemoved)
-                //{
-                //    if (existingAdvocate == null) { Console.WriteLine($"Can't remove existing advocate {@event.UID} "); continue; }
-                //    advocates.Remove(existingAdvocate);
-                //}
             }
 
             Console.WriteLine($"Advocate count: {advocates.Count}");
-
-            await SaveAdvocatesAsync(advocates);
+            Console.WriteLine("GenerateAdvocatesForDashboard completed.");
+            //var emptyResults = advocates.Where(x => x.Team == "" && x.Alias == "" && x.GitHubUserName == "").ToList();
+            //var someEmptyResults = advocates.Where(x => x.Team == "" || x.Alias == "" || x.GitHubUserName == "").ToList();
+            await SaveAdvocatesAsync(advocates.Where(x => x.Alias != "" && x.GitHubUserName != "").ToList());
         }
 
         private async Task SaveAdvocatesAsync(List<DashboardAdvocate> advocates)

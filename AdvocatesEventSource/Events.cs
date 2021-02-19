@@ -37,6 +37,8 @@ namespace AdvocatesEventSource
         public string NewTeam { get; set; }
         public string NewAlias { get; set; }
         public string NewTwitterHandle { get; set; }
+        public string NewUID { get; set; }
+        public string NewFileName { get; set; }
     }
 
     public record AdvocateRemoved : AdvocateEvent
