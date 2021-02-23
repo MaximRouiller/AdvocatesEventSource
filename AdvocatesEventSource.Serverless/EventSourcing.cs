@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -9,8 +10,10 @@ using AdvocatesEventSource.Data;
 using AdvocatesEventSource.Data.Model;
 using AdvocatesEventSource.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Octokit;
@@ -35,14 +38,162 @@ namespace AdvocatesEventSource.Serverless
             client.StartNewAsync(nameof(UpdateNewEventsOrchestrator));
         }
 
+        [FunctionName(nameof(GenerateCurrentAdvocatesAsync))]
+        public async Task GenerateCurrentAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
+            [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
+            ILogger log)
+        {
+            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
+
+            if (eventData.Url.EndsWith("all-events.json"))
+            {
+                string allEventsJson;
+                using (StreamReader sr = new StreamReader(allEventsStream))
+                {
+                    allEventsJson = sr.ReadToEnd();
+                }
+                var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
+                var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(allEventsJson, options);
+
+                List<Advocate> advocates = new List<Advocate>();
+
+                foreach (var @event in allEvents)
+                {
+                    var existingAdvocate = advocates.FirstOrDefault(x => x.UID == @event.UID || x.FileName == @event.FileName);
+
+                    if (@event is AdvocateAdded)
+                    {
+                        var addedAdvocate = @event as AdvocateAdded;
+                        advocates.Add(new Advocate
+                        {
+                            UID = addedAdvocate.UID,
+                            FileName = addedAdvocate.FileName,
+                            GitHubUserName = addedAdvocate.GitHubUserName,
+                            Name = addedAdvocate.Name,
+                            Team = addedAdvocate.Team,
+                            TwitterHandle = addedAdvocate.TwitterHandle,
+                            Alias = addedAdvocate.Alias,
+                        });
+                    }
+                    if (@event is AdvocateModified)
+                    {
+                        var modifiedAdvocate = @event as AdvocateModified;
+
+                        // made to handle file renames
+                        if (existingAdvocate == null)
+                        {
+                            existingAdvocate = advocates.FirstOrDefault(x => x.UID == modifiedAdvocate.NewUID || x.FileName == modifiedAdvocate.NewFileName);
+                        }
+                        if (existingAdvocate == null)
+                        {
+                            existingAdvocate = new Advocate();
+                            advocates.Add(existingAdvocate);
+                            Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
+                        }
+
+                        existingAdvocate.UID = modifiedAdvocate.NewUID;
+                        existingAdvocate.FileName = modifiedAdvocate.NewFileName;
+                        existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
+                        existingAdvocate.Name = modifiedAdvocate.NewName;
+                        existingAdvocate.Team = modifiedAdvocate.NewTeam;
+                        existingAdvocate.TwitterHandle = modifiedAdvocate.NewTwitterHandle;
+                        existingAdvocate.Alias = modifiedAdvocate.NewAlias;
+                    }
+                    if (@event is AdvocateRemoved)
+                    {
+                        if (existingAdvocate == null) { Debug.WriteLine($"Can't remove existing advocate {@event.UID} "); continue; }
+                        advocates.Remove(existingAdvocate);
+                    }
+                }
+
+                var advocatesListJson = JsonSerializer.Serialize(advocates);
+                await storage.SaveFileToBlobStorage("current-advocates.json", advocatesListJson, "application/json");
+            }
+        }
+
+        [FunctionName(nameof(GenerateDashboardAdvocatesAsync))]
+        public async Task GenerateDashboardAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
+            [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
+            ILogger log)
+        {
+            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
+
+            if (eventData.Url.EndsWith("all-events.json"))
+            {
+                string json;
+                using (StreamReader sr = new StreamReader(allEventsStream))
+                {
+                    json = sr.ReadToEnd();
+                }
+                var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
+                var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(json, options);
+
+                List<DashboardAdvocate> advocates = new List<DashboardAdvocate>();
+
+                foreach (var @event in allEvents)
+                {
+                    var existingAdvocate = advocates.FirstOrDefault(x => x.UID == @event.UID || x.FileName == @event.FileName);
+
+                    if (@event is AdvocateAdded)
+                    {
+                        var addedAdvocate = @event as AdvocateAdded;
+                        DashboardAdvocate advocateToAdd = new DashboardAdvocate
+                        {
+                            UID = addedAdvocate.UID,
+                            FileName = addedAdvocate.FileName,
+                            GitHubUserName = addedAdvocate.GitHubUserName,
+                            Team = addedAdvocate.Team,
+                            Alias = addedAdvocate.Alias,
+                        };
+                        if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
+                        {
+                            advocates.Add(advocateToAdd);
+                        }
+                    }
+                    if (@event is AdvocateModified)
+                    {
+                        var modifiedAdvocate = @event as AdvocateModified;
+
+                        // made to handle file renames
+                        if (existingAdvocate == null)
+                        {
+                            existingAdvocate = advocates.FirstOrDefault(x => x.UID == modifiedAdvocate.NewUID || x.FileName == modifiedAdvocate.NewFileName);
+                        }
+                        if (existingAdvocate == null)
+                        {
+                            existingAdvocate = new DashboardAdvocate();
+                            advocates.Add(existingAdvocate);
+                            Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
+                        }
+
+                        existingAdvocate.UID = modifiedAdvocate.NewUID;
+                        existingAdvocate.FileName = modifiedAdvocate.NewFileName;
+                        existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
+                        existingAdvocate.Team = modifiedAdvocate.NewTeam;
+                        existingAdvocate.Alias = modifiedAdvocate.NewAlias;
+                    }
+                }
+
+                var advocatesListJson = JsonSerializer.Serialize(advocates);
+                await storage.SaveFileToBlobStorage("dashboard-advocates.json.json", advocatesListJson, "application/json");
+            }
+        }
+
         [FunctionName(nameof(Advocates))]
         public async Task<List<AdvocateMapping>> Advocates(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            List<AdvocateMapping> advocatesResult = JsonSerializer.Deserialize<List<AdvocateMapping>>(await storage.ReadFileContent("current-advocates.json"));
+            return JsonSerializer.Deserialize<List<AdvocateMapping>>(await storage.ReadFileContent("current-advocates.json"));
+        }
 
-            return advocatesResult;
+
+        [FunctionName(nameof(DashboardAdvocates))]
+        public async Task<List<AdvocateMapping>> DashboardAdvocates(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            return JsonSerializer.Deserialize<List<AdvocateMapping>>(await storage.ReadFileContent("dashboard-advocates.json"));
         }
 
         [FunctionName(nameof(UpdateNewEventsOrchestrator))]
@@ -51,10 +202,10 @@ namespace AdvocatesEventSource.Serverless
             string lastCommit = await context.CallActivityAsync<string>(nameof(GetLatestSyncCommitSHA), null);
 
             var lastCommitSha = await context.CallActivityAsync<string>(nameof(CreateNewEventsFromNewCommits), lastCommit);
-            
+
             if (!string.IsNullOrWhiteSpace(lastCommitSha))
                 await context.CallActivityAsync(nameof(UpdateLastProcessedCommit), lastCommitSha);
-            
+
         }
 
 
