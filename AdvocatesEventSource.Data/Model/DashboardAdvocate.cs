@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AdvocatesEventSource.Model
+namespace AdvocatesEventSource.Data.Model
 {
     [System.Diagnostics.DebuggerDisplay("Advocate: {UID}")]
     public class DashboardAdvocate

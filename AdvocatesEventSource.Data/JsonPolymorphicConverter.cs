@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AdvocatesEventSource
+namespace AdvocatesEventSource.Data
 {
     /// <summary>
     /// Provides a base class for converting a hierarchy of objects to or from JSON.
@@ -30,7 +30,7 @@ namespace AdvocatesEventSource
         protected abstract string DataPropertyName { get; }
 
         /// <inheritdoc/>
-        public override TBase? Read(
+        public override TBase Read(
             ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
@@ -40,7 +40,7 @@ namespace AdvocatesEventSource
             if (reader.TokenType != JsonTokenType.PropertyName)
                 throw new JsonException();
 
-            string? typePropertyName = reader.GetString();
+            string typePropertyName = reader.GetString();
             if (typePropertyName != TypePropertyName)
                 throw new JsonException();
 
@@ -54,7 +54,7 @@ namespace AdvocatesEventSource
             if (reader.TokenType != JsonTokenType.PropertyName)
                 throw new JsonException();
 
-            string? dataPropertyName = reader.GetString();
+            string dataPropertyName = reader.GetString();
             if (dataPropertyName != DataPropertyName)
                 throw new JsonException();
 
@@ -63,7 +63,7 @@ namespace AdvocatesEventSource
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException();
 
-            TBase? readValue = ReadFromDescriptor(ref reader, typeDescriptor);
+            TBase readValue = ReadFromDescriptor(ref reader, typeDescriptor);
             reader.Read();
 
             return readValue;
@@ -99,7 +99,7 @@ namespace AdvocatesEventSource
         /// An enumeration value that specifies the type of <typeparamref name="TBase"/> to read.
         /// </param>
         /// <returns>The converted value.</returns>
-        protected abstract TBase? ReadFromDescriptor(ref Utf8JsonReader reader, TTypeDescriptor typeDescriptor);
+        protected abstract TBase ReadFromDescriptor(ref Utf8JsonReader reader, TTypeDescriptor typeDescriptor);
 
         /// <summary>
         /// Produces a <typeparamref name="TTypeDescriptor"/> value specifying a converted value's type.

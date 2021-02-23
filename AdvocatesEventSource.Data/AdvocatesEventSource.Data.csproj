@@ -1,18 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AdvocatesEventSource.Data\AdvocatesEventSource.Data.csproj" />
   </ItemGroup>
 
 </Project>

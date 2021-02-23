@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AdvocatesEventSource
+namespace AdvocatesEventSource.Data.Model
 {
     /// <summary>
     /// Specifies the type of statistic exported from an Omnified game.

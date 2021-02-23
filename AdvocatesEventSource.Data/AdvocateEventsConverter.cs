@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AdvocatesEventSource.Data.Model;
+using System;
 using System.ComponentModel;
 using System.Text.Json;
 
-namespace AdvocatesEventSource
+namespace AdvocatesEventSource.Data
 {
     /// <summary>
     /// Provides a converter of <see cref="Statistic"/> objects to or from JSON.

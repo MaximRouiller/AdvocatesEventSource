@@ -1,9 +1,8 @@
-﻿using Azure;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+﻿using AdvocatesEventSource.Data;
+using AdvocatesEventSource.Data.Model;
+using AdvocatesEventSource.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,11 +11,11 @@ namespace AdvocatesEventSource.Model
 {
     public class GenerateCurrentState
     {
-        private string _connectionString;
+        private readonly AzureStorageHelper storage;
 
         public GenerateCurrentState(string connectionString)
         {
-            _connectionString = connectionString;
+            storage = new AzureStorageHelper(connectionString);
         }
 
         public async Task ExecuteAsync()
@@ -79,44 +78,16 @@ namespace AdvocatesEventSource.Model
             Console.WriteLine($"Advocate count: {advocates.Count}");
             Console.WriteLine("GenerateCurrentState completed.");
 
-            await SaveCurrentStateAsync(advocates);
-        }
-
-        private async Task SaveCurrentStateAsync(List<Advocate> advocates)
-        {
             var json = JsonSerializer.Serialize(advocates);
 
-            var containerClient = new BlobContainerClient(_connectionString, "advocates-events");
-            await containerClient.CreateIfNotExistsAsync();
-            BlobClient blob = containerClient.GetBlobClient("current-advocates.json");
-
-            using (var stream = new MemoryStream())
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.Write(json);
-                await writer.FlushAsync();
-
-                stream.Position = 0;
-                await blob.UploadAsync(stream, overwrite: true);
-            }
-            await blob.SetHttpHeadersAsync(new BlobHttpHeaders { ContentType = "application/json" });
+            await storage.SaveFileToBlobStorage("current-advocates.json", json, "application/json");
         }
 
         private async Task<List<AdvocateEvent>> GetAllEvents()
         {
-            var containerClient = new BlobContainerClient(_connectionString, "advocates-events");
-            await containerClient.CreateIfNotExistsAsync();
-            BlobClient blob = containerClient.GetBlobClient("all-events.json");
-
-            Response<BlobDownloadInfo> result = await blob.DownloadAsync();
-
-            using (var sr = new StreamReader(result.Value.Content))
-            {
-                string json = sr.ReadToEnd();
-
-                var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
-                return JsonSerializer.Deserialize<List<AdvocateEvent>>(json, options);
-            }
+            string json = await storage.ReadFileContent("all-events.json");
+            var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
+            return JsonSerializer.Deserialize<List<AdvocateEvent>>(json, options);
         }
     }
 }

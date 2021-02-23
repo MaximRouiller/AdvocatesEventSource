@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AdvocatesEventSource.Model
+namespace AdvocatesEventSource.Data.Model
 {
     [System.Diagnostics.DebuggerDisplay("Advocate: {UID}, {Name}")]
     public class Advocate
