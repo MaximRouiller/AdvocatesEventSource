@@ -197,12 +197,15 @@ namespace AdvocatesEventSource.Serverless
         }
 
         [FunctionName(nameof(UpdateNewEventsOrchestrator))]
-        public async Task UpdateNewEventsOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
+        public async Task UpdateNewEventsOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context, ILogger log)
         {
+            log.LogInformation("Retrieving Latest Sync Commit SHA");
             string lastCommit = await context.CallActivityAsync<string>(nameof(GetLatestSyncCommitSHA), null);
 
+            log.LogInformation("Creating and updating new events");
             var lastCommitSha = await context.CallActivityAsync<string>(nameof(CreateNewEventsFromNewCommits), lastCommit);
 
+            log.LogInformation("Updating lastest commit SHA");
             if (!string.IsNullOrWhiteSpace(lastCommitSha))
                 await context.CallActivityAsync(nameof(UpdateLastProcessedCommit), lastCommitSha);
 
