@@ -19,7 +19,10 @@ namespace AdvocatesEventSource.Infrastructure
         public async Task<string> ReadFileContent(string filename)
         {
             var containerClient = new BlobContainerClient(connectionString, defaultContainerName);
-            await containerClient.CreateIfNotExistsAsync();
+            if (!await containerClient.ExistsAsync())
+            {
+                await containerClient.CreateIfNotExistsAsync();
+            }
             BlobClient blob = containerClient.GetBlobClient(filename);
 
             Response<BlobDownloadInfo> result = await blob.DownloadAsync();
@@ -33,7 +36,10 @@ namespace AdvocatesEventSource.Infrastructure
         public async Task SaveFileToBlobStorage(string filename, string content, string mimeType)
         {
             var containerClient = new BlobContainerClient(connectionString, defaultContainerName);
-            await containerClient.CreateIfNotExistsAsync();
+            if (!await containerClient.ExistsAsync())
+            {
+                await containerClient.CreateIfNotExistsAsync();
+            }
             BlobClient blob = containerClient.GetBlobClient(filename);
 
             using (var stream = new MemoryStream())
