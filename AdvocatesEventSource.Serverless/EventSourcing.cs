@@ -40,7 +40,6 @@ namespace AdvocatesEventSource.Serverless
 
         [FunctionName(nameof(GenerateCurrentAdvocatesAsync))]
         public async Task GenerateCurrentAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
-            [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
             ILogger log)
         {
             log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
@@ -48,11 +47,8 @@ namespace AdvocatesEventSource.Serverless
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
-                string allEventsJson;
-                using (StreamReader sr = new StreamReader(allEventsStream))
-                {
-                    allEventsJson = sr.ReadToEnd();
-                }
+                string allEventsJson = await storage.ReadFileContent("all-events.json");
+                
                 var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
                 var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(allEventsJson, options);
 
@@ -114,7 +110,6 @@ namespace AdvocatesEventSource.Serverless
 
         [FunctionName(nameof(GenerateDashboardAdvocatesAsync))]
         public async Task GenerateDashboardAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
-            [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
             ILogger log)
         {
             log.LogInformation($"Starting {nameof(GenerateDashboardAdvocatesAsync)}");
@@ -123,13 +118,9 @@ namespace AdvocatesEventSource.Serverless
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
-                string json;
-                using (StreamReader sr = new StreamReader(allEventsStream))
-                {
-                    json = sr.ReadToEnd();
-                }
+                string allEventsJson = await storage.ReadFileContent("all-events.json");
                 var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
-                var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(json, options);
+                var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(allEventsJson, options);
 
                 List<DashboardAdvocate> advocates = new List<DashboardAdvocate>();
 
