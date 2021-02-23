@@ -43,6 +43,7 @@ namespace AdvocatesEventSource.Serverless
             [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
             ILogger log)
         {
+            log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
             var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
 
             if (eventData.Url.EndsWith("all-events.json"))
@@ -116,6 +117,8 @@ namespace AdvocatesEventSource.Serverless
             [Blob("{data.Url}", FileAccess.Read, Connection = "AdvocateDashboardStorageConnectionString")] Stream allEventsStream,
             ILogger log)
         {
+            log.LogInformation($"Starting {nameof(GenerateDashboardAdvocatesAsync)}");
+
             var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
 
             if (eventData.Url.EndsWith("all-events.json"))
