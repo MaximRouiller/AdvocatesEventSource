@@ -4,9 +4,10 @@ on:
   push:
     branches: main
     paths: 
+    - '.github/workflows/main.yml'
     - 'AdvocatesEventSource.Serverless/**'
     - 'AdvocatesEventSource.Data/**'
-  
+  workflow_dispatch:
 
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
