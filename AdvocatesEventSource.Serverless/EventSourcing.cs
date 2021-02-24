@@ -54,6 +54,7 @@ namespace AdvocatesEventSource.Serverless
 
                 List<Advocate> advocates = new List<Advocate>();
 
+                log.LogDebug($"allEvents: {allEvents?.Count}");
                 foreach (var @event in allEvents)
                 {
                     var existingAdvocate = advocates.FirstOrDefault(x => x.UID == @event.UID || x.FileName == @event.FileName);
@@ -124,6 +125,7 @@ namespace AdvocatesEventSource.Serverless
 
                 List<DashboardAdvocate> advocates = new List<DashboardAdvocate>();
 
+                log.LogDebug($"allEvents: {allEvents?.Count}");
                 foreach (var @event in allEvents)
                 {
                     var existingAdvocate = advocates.FirstOrDefault(x => x.UID == @event.UID || x.FileName == @event.FileName);

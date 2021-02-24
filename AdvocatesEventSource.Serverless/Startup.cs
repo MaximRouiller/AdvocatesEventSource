@@ -13,7 +13,7 @@ namespace AdvocatesEventSource.Serverless
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddScoped(sp => new AzureStorageHelper(Environment.GetEnvironmentVariable("AdvocateDashboardStorageConnectionString", EnvironmentVariableTarget.Process)));
+            builder.Services.AddScoped(sp => new AzureStorageHelper(Environment.GetEnvironmentVariable("AdvocateDashboardStorageConnectionString")));
         }
     }
 }
