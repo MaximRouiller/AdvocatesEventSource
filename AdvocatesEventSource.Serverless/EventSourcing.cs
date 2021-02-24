@@ -42,8 +42,8 @@ namespace AdvocatesEventSource.Serverless
         public async Task GenerateCurrentAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
             ILogger log)
         {
-            log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
-            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
+             log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
+            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
@@ -115,7 +115,7 @@ namespace AdvocatesEventSource.Serverless
         {
             log.LogInformation($"Starting {nameof(GenerateDashboardAdvocatesAsync)}");
 
-            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString());
+            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
