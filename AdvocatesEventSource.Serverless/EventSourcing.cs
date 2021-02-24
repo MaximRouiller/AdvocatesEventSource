@@ -42,13 +42,13 @@ namespace AdvocatesEventSource.Serverless
         public async Task GenerateCurrentAdvocatesAsync([EventGridTrigger] EventGridEvent receivedEvent,
             ILogger log)
         {
-             log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
+            log.LogInformation($"Starting {nameof(GenerateCurrentAdvocatesAsync)}");
             var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
                 string allEventsJson = await storage.ReadFileContent("all-events.json");
-                
+
                 var options = new JsonSerializerOptions { Converters = { new AdvocateEventsConverter() } };
                 var allEvents = JsonSerializer.Deserialize<List<AdvocateEvent>>(allEventsJson, options);
 
@@ -115,7 +115,8 @@ namespace AdvocatesEventSource.Serverless
         {
             log.LogInformation($"Starting {nameof(GenerateDashboardAdvocatesAsync)}");
 
-            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var eventData = JsonSerializer.Deserialize<StorageBlobCreatedEventData>(receivedEvent.Data.ToString(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (eventData.Url.EndsWith("all-events.json"))
             {
@@ -171,7 +172,7 @@ namespace AdvocatesEventSource.Serverless
                 }
 
                 var advocatesListJson = JsonSerializer.Serialize(advocates);
-                await storage.SaveFileToBlobStorage("dashboard-advocates.json.json", advocatesListJson, "application/json");
+                await storage.SaveFileToBlobStorage("dashboard-advocates.json", advocatesListJson, "application/json");
             }
         }
 
