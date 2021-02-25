@@ -169,7 +169,7 @@ namespace AdvocatesEventSource.Serverless
                     }
                 }
 
-                var advocatesListJson = JsonSerializer.Serialize(advocates);
+                var advocatesListJson = JsonSerializer.Serialize(advocates.Where(x => x.GitHubUserName != "" && x.Alias != ""));
                 await storage.SaveFileToBlobStorage("dashboard-advocates.json", advocatesListJson, "application/json");
             }
         }
