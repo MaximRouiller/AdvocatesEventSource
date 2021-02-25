@@ -189,8 +189,8 @@ namespace AdvocatesEventSource.Data.Parser
 
         private string ReadGitHubUsername(string content)
         {
-            Regex github_v1 = new Regex($"github: (http|https)://github.com/(?<{nameof(github_v1)}>\\w*)/?\n");
-            Regex github_v2 = new Regex($"    url: (http|https)://github.com/(?<{nameof(github_v2)}>\\w*)/?\n");
+            Regex github_v1 = new Regex($"github: (http|https)://github.com/(?<{nameof(github_v1)}>\\w*)\n");
+            Regex github_v2 = new Regex($"url: (http|https)://github.com/(?<{nameof(github_v2)}>\\w*)\n");
             var githubUsername_v1 = MatchAndClean(github_v1, nameof(github_v1), content);
             var githubUsername_v2 = MatchAndClean(github_v2, nameof(github_v2), content);
 
@@ -208,7 +208,7 @@ namespace AdvocatesEventSource.Data.Parser
 
         private string MatchAndClean(Regex regex, string groupName, string content)
         {
-            return regex.Match(content).Groups[groupName].Value.Replace("\r", string.Empty);
+            return regex.Match(content).Groups[groupName].Value.Replace("\r", string.Empty).Replace("/", string.Empty);
         }
 
         private TreeEntry GetTreeEntry(Commit commit, string path)
