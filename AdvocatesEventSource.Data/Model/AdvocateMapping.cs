@@ -11,6 +11,8 @@ namespace AdvocatesEventSource.Data.Model
         public string MicrosoftAlias { get; set; }
         [JsonPropertyName("Team")]
         public string Team { get; set; }
+        [JsonPropertyName("Name")]
+        public string Name { get; set; }
 
         public override bool Equals(object obj)
         {
