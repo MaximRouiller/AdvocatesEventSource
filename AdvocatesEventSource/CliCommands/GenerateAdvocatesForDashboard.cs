@@ -40,6 +40,7 @@ namespace AdvocatesEventSource.CliCommands
                         GitHubUserName = addedAdvocate.GitHubUserName,
                         Team = addedAdvocate.Team,
                         Alias = addedAdvocate.Alias,
+                        FullName = addedAdvocate.Name
                     };
                     if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                     {
@@ -67,6 +68,7 @@ namespace AdvocatesEventSource.CliCommands
                     existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
+                    existingAdvocate.FullName = modifiedAdvocate.NewName;
                 }
             }
 
@@ -75,7 +77,7 @@ namespace AdvocatesEventSource.CliCommands
             //var emptyResults = advocates.Where(x => x.Team == "" && x.Alias == "" && x.GitHubUserName == "").ToList();
             //var someEmptyResults = advocates.Where(x => x.Team == "" || x.Alias == "" || x.GitHubUserName == "").ToList();
 
-            List<DashboardAdvocate> advocatesToSave = advocates.Where(x => x.Alias != "" && x.GitHubUserName != "").ToList();
+            List<DashboardAdvocate> advocatesToSave = advocates.Where(x => x.Alias != "").ToList();
             await storage.SaveFileToBlobStorage("dashboard-advocates.json", JsonSerializer.Serialize(advocatesToSave), "application/json");
         }
 

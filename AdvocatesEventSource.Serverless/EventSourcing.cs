@@ -139,6 +139,7 @@ namespace AdvocatesEventSource.Serverless
                             GitHubUserName = addedAdvocate.GitHubUserName,
                             Team = addedAdvocate.Team,
                             Alias = addedAdvocate.Alias,
+                            FullName = addedAdvocate.Name
                         };
                         if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                         {
@@ -165,6 +166,7 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.FileName = modifiedAdvocate.NewFileName;
                         existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
                         existingAdvocate.Team = modifiedAdvocate.NewTeam;
+                        existingAdvocate.FullName = modifiedAdvocate.NewName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     }
                 }

@@ -189,8 +189,8 @@ namespace AdvocatesEventSource.Data.Parser
 
         private string ReadGitHubUsername(string content)
         {
-            Regex github_v1 = new Regex($"github: (http|https)://github.com/(?<{nameof(github_v1)}>\\w*)\n");
-            Regex github_v2 = new Regex($"url: (http|https)://github.com/(?<{nameof(github_v2)}>\\w*)\n");
+            Regex github_v1 = new Regex($"github: (http|https)://github.com/(?<{nameof(github_v1)}>.*)\n");
+            Regex github_v2 = new Regex($"url: (http|https)://github.com/(?<{nameof(github_v2)}>.*)\n");
             var githubUsername_v1 = MatchAndClean(github_v1, nameof(github_v1), content);
             var githubUsername_v2 = MatchAndClean(github_v2, nameof(github_v2), content);
 
@@ -199,8 +199,8 @@ namespace AdvocatesEventSource.Data.Parser
 
         private string ReadTwitterUsername(string content)
         {
-            Regex twitter_v1 = new Regex($"github: (http|https)://twitter.com/(?<{nameof(twitter_v1)}>\\w*)\n");
-            Regex twitter_v2 = new Regex($"    url: (http|https)://twitter.com/(?<{nameof(twitter_v2)}>\\w*)\n");
+            Regex twitter_v1 = new Regex($"github: (http|https)://twitter.com/(?<{nameof(twitter_v1)}>.*)\n");
+            Regex twitter_v2 = new Regex($"    url: (http|https)://twitter.com/(?<{nameof(twitter_v2)}>.*)\n");
             var twitterUsername_v1 = MatchAndClean(twitter_v1, nameof(twitter_v1), content);
             var twitterUsername_v2 = MatchAndClean(twitter_v2, nameof(twitter_v2), content);
             return twitterUsername_v1 == string.Empty ? twitterUsername_v2 : twitterUsername_v1;
