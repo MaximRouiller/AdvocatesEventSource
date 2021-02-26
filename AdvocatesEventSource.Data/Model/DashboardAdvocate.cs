@@ -13,6 +13,6 @@ namespace AdvocatesEventSource.Data.Model
         public string GitHubUserName { get; set; }
         public string Team { get; set; }
         public string Alias { get; set; }
-        public string FullName { get; set; }
+        public string Name { get; set; }
     }
 }

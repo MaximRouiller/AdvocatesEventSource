@@ -40,7 +40,7 @@ namespace AdvocatesEventSource.CliCommands
                         GitHubUserName = addedAdvocate.GitHubUserName,
                         Team = addedAdvocate.Team,
                         Alias = addedAdvocate.Alias,
-                        FullName = addedAdvocate.Name
+                        Name = addedAdvocate.Name
                     };
                     if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                     {
@@ -68,7 +68,7 @@ namespace AdvocatesEventSource.CliCommands
                     existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
-                    existingAdvocate.FullName = modifiedAdvocate.NewName;
+                    existingAdvocate.Name = modifiedAdvocate.NewName;
                 }
             }
 
