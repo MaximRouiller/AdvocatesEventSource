@@ -9,6 +9,8 @@ namespace AdvocatesEventSource.Data.Model
         public string GitHubUsername { get; set; }
         [JsonPropertyName("Alias")]
         public string MicrosoftAlias { get; set; }
+        [JsonPropertyName("RedditUserName")]
+        public string RedditUserName { get; set; }
         [JsonPropertyName("Team")]
         public string Team { get; set; }
         [JsonPropertyName("Name")]
