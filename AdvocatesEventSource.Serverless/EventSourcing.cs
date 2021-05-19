@@ -94,7 +94,7 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.Name = modifiedAdvocate.NewName;
                         existingAdvocate.Team = modifiedAdvocate.NewTeam;
                         existingAdvocate.TwitterHandle = modifiedAdvocate.NewTwitterHandle;
-                        existingAdvocate.RedditUsername = modifiedAdvocate.NewRedditUserName;
+                        existingAdvocate.RedditUserName = modifiedAdvocate.NewRedditUserName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     }
                     if (@event is AdvocateRemoved)
