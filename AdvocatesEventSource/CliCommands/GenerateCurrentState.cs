@@ -41,6 +41,7 @@ namespace AdvocatesEventSource.Model
                         Name = addedAdvocate.Name,
                         Team = addedAdvocate.Team,
                         TwitterHandle = addedAdvocate.TwitterHandle,
+                        RedditUsername = addedAdvocate.RedditUserName,
                         Alias = addedAdvocate.Alias,
                     });
                 }
@@ -66,6 +67,7 @@ namespace AdvocatesEventSource.Model
                     existingAdvocate.Name = modifiedAdvocate.NewName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.TwitterHandle = modifiedAdvocate.NewTwitterHandle;
+                    existingAdvocate.RedditUsername = modifiedAdvocate.NewRedditUserName;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                 }
                 if (@event is AdvocateRemoved)

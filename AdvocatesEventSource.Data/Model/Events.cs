@@ -28,6 +28,7 @@ namespace AdvocatesEventSource.Data.Model
         public string Team { get; set; }
         public string Alias { get; set; }
         public string TwitterHandle { get; set; }
+        public string RedditUserName { get; set; }
     }
 
     public record AdvocateModified : AdvocateEvent
@@ -37,6 +38,7 @@ namespace AdvocatesEventSource.Data.Model
         public string NewTeam { get; set; }
         public string NewAlias { get; set; }
         public string NewTwitterHandle { get; set; }
+        public string NewRedditUserName { get; set; }
         public string NewUID { get; set; }
         public string NewFileName { get; set; }
     }

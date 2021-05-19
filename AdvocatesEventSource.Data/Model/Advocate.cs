@@ -13,5 +13,6 @@ namespace AdvocatesEventSource.Data.Model
         public string Team { get; set; }
         public string Alias { get; set; }
         public string TwitterHandle { get; set; }
+        public string RedditUsername { get; set; }
     }
 }

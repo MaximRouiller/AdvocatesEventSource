@@ -94,6 +94,7 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.Name = modifiedAdvocate.NewName;
                         existingAdvocate.Team = modifiedAdvocate.NewTeam;
                         existingAdvocate.TwitterHandle = modifiedAdvocate.NewTwitterHandle;
+                        existingAdvocate.RedditUsername = modifiedAdvocate.NewRedditUserName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     }
                     if (@event is AdvocateRemoved)
@@ -137,6 +138,7 @@ namespace AdvocatesEventSource.Serverless
                             UID = addedAdvocate.UID,
                             FileName = addedAdvocate.FileName,
                             GitHubUserName = addedAdvocate.GitHubUserName,
+                            RedditUserName = addedAdvocate.RedditUserName,
                             Team = addedAdvocate.Team,
                             Alias = addedAdvocate.Alias,
                             Name = addedAdvocate.Name
@@ -165,6 +167,7 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.UID = modifiedAdvocate.NewUID;
                         existingAdvocate.FileName = modifiedAdvocate.NewFileName;
                         existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
+                        existingAdvocate.RedditUserName = modifiedAdvocate.NewRedditUserName;
                         existingAdvocate.Team = modifiedAdvocate.NewTeam;
                         existingAdvocate.Name = modifiedAdvocate.NewName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
@@ -358,6 +361,7 @@ namespace AdvocatesEventSource.Serverless
                 NewAlias = addedEvent.Alias,
                 NewTeam = addedEvent.Team,
                 NewTwitterHandle = addedEvent.TwitterHandle,
+                NewRedditUserName = addedEvent.RedditUserName
             };
         }
 
@@ -381,7 +385,8 @@ namespace AdvocatesEventSource.Serverless
                 Alias = ReadAlias(content),
                 Team = ReadTeam(content),
                 GitHubUserName = ReadGitHubUsername(content),
-                TwitterHandle = ReadTwitterUsername(content)
+                TwitterHandle = ReadTwitterUsername(content),
+                RedditUserName = ReadRedditUsername(content)
             };
         }
         private string ReadUID(string content)
@@ -414,6 +419,15 @@ namespace AdvocatesEventSource.Serverless
             var githubUsername_v2 = MatchAndClean(github_v2, nameof(github_v2), content);
 
             return githubUsername_v1 == string.Empty ? githubUsername_v2 : githubUsername_v1;
+        }
+
+        private string ReadRedditUsername(string content)
+        {
+            Regex reddit_v1 = new Regex($"reddit: (http|https)://www.reddit.com/user/(?<{nameof(reddit_v1)}>.*)\n");
+            Regex reddit_v2 = new Regex($"    url: (http|https)://www.reddit.com/user/(?<{nameof(reddit_v2)}>.*)\n");
+            var redditUsername_v1 = MatchAndClean(reddit_v1, nameof(reddit_v1), content);
+            var redditUsername_v2 = MatchAndClean(reddit_v2, nameof(reddit_v2), content);
+            return redditUsername_v1 == string.Empty ? redditUsername_v2 : redditUsername_v1;
         }
 
         private string ReadTwitterUsername(string content)

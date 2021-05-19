@@ -11,6 +11,7 @@ namespace AdvocatesEventSource.Data.Model
         public string FileName { get; set; }
 
         public string GitHubUserName { get; set; }
+        public string RedditUserName { get; set; }
         public string Team { get; set; }
         public string Alias { get; set; }
         public string Name { get; set; }

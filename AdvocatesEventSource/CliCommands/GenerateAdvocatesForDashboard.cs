@@ -38,6 +38,7 @@ namespace AdvocatesEventSource.CliCommands
                         UID = addedAdvocate.UID,
                         FileName = addedAdvocate.FileName,
                         GitHubUserName = addedAdvocate.GitHubUserName,
+                        RedditUserName = addedAdvocate.RedditUserName,
                         Team = addedAdvocate.Team,
                         Alias = addedAdvocate.Alias,
                         Name = addedAdvocate.Name
@@ -66,6 +67,7 @@ namespace AdvocatesEventSource.CliCommands
                     existingAdvocate.UID = modifiedAdvocate.NewUID;
                     existingAdvocate.FileName = modifiedAdvocate.NewFileName;
                     existingAdvocate.GitHubUserName = modifiedAdvocate.NewGitHubUserName;
+                    existingAdvocate.RedditUserName = modifiedAdvocate.NewRedditUserName;
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     existingAdvocate.Name = modifiedAdvocate.NewName;

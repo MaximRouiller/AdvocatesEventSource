@@ -139,6 +139,7 @@ namespace AdvocatesEventSource.Data.Parser
                 NewAlias = addedEvent.Alias,
                 NewTeam = addedEvent.Team,
                 NewTwitterHandle = addedEvent.TwitterHandle,
+                NewRedditUserName = addedEvent.RedditUserName
             };
         }
 
@@ -162,7 +163,8 @@ namespace AdvocatesEventSource.Data.Parser
                 Alias = ReadAlias(content),
                 Team = ReadTeam(content),
                 GitHubUserName = ReadGitHubUsername(content),
-                TwitterHandle = ReadTwitterUsername(content)
+                TwitterHandle = ReadTwitterUsername(content),
+                RedditUserName = ReadRedditUsername(content)
             };
         }
         private string ReadUID(string content)
@@ -204,6 +206,15 @@ namespace AdvocatesEventSource.Data.Parser
             var twitterUsername_v1 = MatchAndClean(twitter_v1, nameof(twitter_v1), content);
             var twitterUsername_v2 = MatchAndClean(twitter_v2, nameof(twitter_v2), content);
             return twitterUsername_v1 == string.Empty ? twitterUsername_v2 : twitterUsername_v1;
+        }
+
+        private string ReadRedditUsername(string content)
+        {
+            Regex reddit_v1 = new Regex($"reddit: (http|https)://www.reddit.com/user/(?<{nameof(reddit_v1)}>.*)\n");
+            Regex reddit_v2 = new Regex($"    url: (http|https)://www.reddit.com/user/(?<{nameof(reddit_v2)}>.*)\n");
+            var redditUsername_v1 = MatchAndClean(reddit_v1, nameof(reddit_v1), content);
+            var redditUsername_v2 = MatchAndClean(reddit_v2, nameof(reddit_v2), content);
+            return redditUsername_v1 == string.Empty ? redditUsername_v2 : redditUsername_v1;
         }
 
         private string MatchAndClean(Regex regex, string groupName, string content)
