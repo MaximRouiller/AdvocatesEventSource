@@ -43,6 +43,7 @@ namespace AdvocatesEventSource.CliCommands
                         Alias = addedAdvocate.Alias,
                         Name = addedAdvocate.Name,
                         AddedDate = @event.EventDate,
+                        RemovedDate = null
                     };
                     if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                     {
@@ -62,6 +63,7 @@ namespace AdvocatesEventSource.CliCommands
                     {
                         existingAdvocate = new DashboardAdvocate();
                         advocates.Add(existingAdvocate);
+                        existingAdvocate.AddedDate = @event.EventDate;
                         Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
                     }
 
@@ -72,6 +74,7 @@ namespace AdvocatesEventSource.CliCommands
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     existingAdvocate.Name = modifiedAdvocate.NewName;
+                    existingAdvocate.RemovedDate = null;
                 }
                 if (@event is AdvocateRemoved)
                 {

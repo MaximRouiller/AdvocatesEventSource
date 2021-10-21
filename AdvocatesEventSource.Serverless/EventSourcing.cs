@@ -144,6 +144,7 @@ namespace AdvocatesEventSource.Serverless
                             Alias = addedAdvocate.Alias,
                             Name = addedAdvocate.Name,
                             AddedDate = @event.EventDate,
+                            RemovedDate = null
                         };
                         if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                         {
@@ -163,6 +164,7 @@ namespace AdvocatesEventSource.Serverless
                         {
                             existingAdvocate = new DashboardAdvocate();
                             advocates.Add(existingAdvocate);
+                            existingAdvocate.AddedDate = @event.EventDate;
                             Console.WriteLine($"Modified event without Added for Advocate: '{@event.UID}' ");
                         }
 
@@ -173,6 +175,7 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.Team = modifiedAdvocate.NewTeam;
                         existingAdvocate.Name = modifiedAdvocate.NewName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
+                        existingAdvocate.RemovedDate = null;
                     }
                     if (@event is AdvocateRemoved)
                     {
