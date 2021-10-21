@@ -2,14 +2,10 @@
 using AdvocatesEventSource.Data.Model;
 using AdvocatesEventSource.Data.Parser;
 using AdvocatesEventSource.Infrastructure;
-using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AdvocatesEventSource.Model
@@ -41,6 +37,6 @@ namespace AdvocatesEventSource.Model
             Console.WriteLine("GenerateAllEvents completed.");
         }
 
-        
+
     }
 }

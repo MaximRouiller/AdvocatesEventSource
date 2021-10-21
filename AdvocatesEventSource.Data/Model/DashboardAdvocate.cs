@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace AdvocatesEventSource.Data.Model
 {
@@ -15,5 +16,7 @@ namespace AdvocatesEventSource.Data.Model
         public string Team { get; set; }
         public string Alias { get; set; }
         public string Name { get; set; }
+        public DateTimeOffset AddedDate { get; set; }
+        public DateTimeOffset? RemovedDate { get; set; }
     }
 }

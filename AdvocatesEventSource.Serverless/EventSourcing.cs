@@ -10,6 +10,7 @@ using AdvocatesEventSource.Data;
 using AdvocatesEventSource.Data.Model;
 using AdvocatesEventSource.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
@@ -141,7 +142,8 @@ namespace AdvocatesEventSource.Serverless
                             RedditUserName = addedAdvocate.RedditUserName,
                             Team = addedAdvocate.Team,
                             Alias = addedAdvocate.Alias,
-                            Name = addedAdvocate.Name
+                            Name = addedAdvocate.Name,
+                            AddedDate = @event.EventDate,
                         };
                         if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                         {
@@ -172,6 +174,14 @@ namespace AdvocatesEventSource.Serverless
                         existingAdvocate.Name = modifiedAdvocate.NewName;
                         existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     }
+                    if (@event is AdvocateRemoved)
+                    {
+                        var removedAdvocate = @event as AdvocateRemoved;
+                        if (existingAdvocate != null)
+                        {
+                            existingAdvocate.RemovedDate = @event.EventDate;
+                        }
+                    }
                 }
 
                 var advocatesListJson = JsonSerializer.Serialize(advocates.Where(x => x.Alias != ""));
@@ -180,11 +190,12 @@ namespace AdvocatesEventSource.Serverless
         }
 
         [FunctionName(nameof(Advocates))]
-        public async Task<List<AdvocateMapping>> Advocates(
+        public async Task<JsonResult> Advocates(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            return JsonSerializer.Deserialize<List<AdvocateMapping>>(await storage.ReadFileContent("current-advocates.json"));
+            var serializerSettings = new Newtonsoft.Json.JsonSerializerSettings { DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore };
+            return new JsonResult(System.Text.Json.JsonSerializer.Deserialize<List<AdvocateMapping>>(await storage.ReadFileContent("current-advocates.json")), serializerSettings);
         }
 
 

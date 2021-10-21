@@ -15,6 +15,10 @@ namespace AdvocatesEventSource.Data.Model
         public string Team { get; set; }
         [JsonPropertyName("Name")]
         public string Name { get; set; }
+        [JsonPropertyName("AddedDate")]
+        public DateTimeOffset? AddedDate { get; set; } = null;
+        [JsonPropertyName("RemovedDate")]
+        public DateTimeOffset? RemovedDate { get; set; } = null;
 
         public override bool Equals(object obj)
         {

@@ -41,7 +41,8 @@ namespace AdvocatesEventSource.CliCommands
                         RedditUserName = addedAdvocate.RedditUserName,
                         Team = addedAdvocate.Team,
                         Alias = addedAdvocate.Alias,
-                        Name = addedAdvocate.Name
+                        Name = addedAdvocate.Name,
+                        AddedDate = @event.EventDate,
                     };
                     if (!advocates.Any(x => x.FileName == addedAdvocate.FileName || x.UID == addedAdvocate.UID))
                     {
@@ -71,6 +72,14 @@ namespace AdvocatesEventSource.CliCommands
                     existingAdvocate.Team = modifiedAdvocate.NewTeam;
                     existingAdvocate.Alias = modifiedAdvocate.NewAlias;
                     existingAdvocate.Name = modifiedAdvocate.NewName;
+                }
+                if (@event is AdvocateRemoved)
+                {
+                    var removedAdvocate = @event as AdvocateRemoved;
+                    if (existingAdvocate != null)
+                    {
+                        existingAdvocate.RemovedDate = @event.EventDate;
+                    }
                 }
             }
 
